@@ -1,9 +1,4 @@
-<!doctype html>
-<html lang="id">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Novancation Studio</title>
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Novancation Studio</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +7,7 @@
 <style>
 /* Layout: kiri = kanvas 3:4 + deretan slide; kanan = panel kontrol bertab. Di ponsel ditumpuk. */
 :root{
-  --bg:#F2F4F1; --surface:#FFFFFF; --surface-2:#E8ECE6; --stage:#DDE3DA;
+  --hh:54px; --bg:#F2F4F1; --surface:#FFFFFF; --surface-2:#E8ECE6; --stage:#DDE3DA;
   --ink:#1D2320; --muted:#59635C; --line:#D2D9D0;
   --accent:#BF5700; --on-accent:#FFFFFF; --accent-soft:#FCE6D2; --danger:#B3261E;
   --ui:"Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -28,17 +23,27 @@
   --accent:#FF9B3F; --on-accent:#1A1106; --accent-soft:#3B2A18; --danger:#FF8A80; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:400 15px/1.45 var(--ui);
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 48px}
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
 .app{max-width:1160px;margin:0 auto}
-header.top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+header.top{position:sticky;top:0;z-index:6;background:var(--bg);display:flex;align-items:center;gap:12px;height:var(--hh);margin-bottom:8px}
 header.top h1{font-size:22px;font-weight:800;letter-spacing:-.01em;margin:0}
 header.top .tagline{font:400 20px var(--tag);letter-spacing:.14em;color:var(--accent)}
 .grid{display:grid;grid-template-columns:minmax(0,500px) minmax(0,1fr);gap:24px;align-items:start}
-@media(max-width:880px){.grid{grid-template-columns:minmax(0,1fr)}}
 .stage{min-width:0}
-@media(min-width:881px){.stage{position:sticky;top:14px}}
+@media(min-width:881px){.stage{position:sticky;top:calc(var(--hh) + 8px)}}
+
+.toolbar{display:flex;gap:6px;margin-top:8px;overflow-x:auto;padding-bottom:2px}
+.toolbar .btn{flex:0 0 auto}
+.pop{position:fixed;z-index:50;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.32);padding:14px;width:min(330px,calc(100vw - 24px));display:flex;flex-direction:column;gap:12px;max-height:72vh;overflow:auto}
+.pop[hidden]{display:none}
+.pop.sheet{left:0!important;right:0;bottom:0;top:auto!important;width:auto;border-radius:16px 16px 0 0;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));max-height:60vh}
+.pop h3{margin:0;font-size:15px;font-weight:800}
+.tpl{display:flex;gap:6px;flex-wrap:wrap}
+.sw input[type=color]{width:30px;height:30px;padding:1px;border-radius:50%}
+.home p{margin:0}
+.fp{white-space:nowrap;font-size:15px}
 .canvas-wrap{position:relative;background:var(--stage);border-radius:14px;padding:12px;display:flex;justify-content:center}
-#stage{display:block;width:100%;max-width:100%;height:auto;max-height:78vh;object-fit:contain;touch-action:none;cursor:grab;border-radius:4px;box-shadow:0 6px 24px rgba(0,0,0,.22);background:#222}
+#stage{display:block;width:auto;height:auto;max-width:100%;max-height:78vh;touch-action:none;cursor:pointer;border-radius:4px;box-shadow:0 6px 24px rgba(0,0,0,.22);background:#222}
 #stage:active{cursor:grabbing}
 .badge{position:absolute;left:22px;top:22px;background:var(--accent);color:var(--on-accent);font-weight:800;font-size:12px;padding:3px 9px;border-radius:99px;letter-spacing:.04em}
 .stage-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
@@ -95,15 +100,29 @@ input[type=color]{width:44px;height:36px;padding:2px;border:1px solid var(--line
 #results img{width:100%;border-radius:8px;display:block}
 #results .imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
 @media (prefers-reduced-motion:no-preference){.btn,.tab,.chip{transition:background .12s}}
-</style>
-</head>
-<body>
-
+.nav{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+.nav span{min-width:42px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+.btn.icon{width:44px;padding:0;font-size:26px;line-height:1;font-weight:600}
+@media(max-width:880px){
+  .grid{display:block}
+  .stage{background:var(--bg);padding:4px 0 6px;margin-bottom:10px}
+  .canvas-wrap{padding:8px}
+  #stage{max-height:50vh}
+  .hint{display:none}
+  .panel.closed{display:none}
+  header.top h1{font-size:18px}
+  header.top .tagline{display:none}
+  .home{display:none!important}
+}
+@media(max-width:880px) and (min-height:700px){.stage{position:sticky;top:var(--hh);z-index:5;box-shadow:0 10px 12px -10px rgba(0,0,0,.4)}}
+</style></head><body>
 
 <div class="app">
   <header class="top">
     <h1>Novancation Studio</h1>
     <span class="tagline">Stories of novancation!</span>
+    <button class="btn icon" id="addBtn" type="button" style="margin-left:auto" aria-label="Tambah foto">+</button>
+    <button class="btn primary" id="saveBtn" type="button" aria-haspopup="dialog">Simpan</button>
   </header>
 
   <div class="grid">
@@ -112,29 +131,31 @@ input[type=color]{width:44px;height:36px;padding:2px;border:1px solid var(--line
         <canvas id="stage" aria-label="Pratinjau slide"></canvas>
         <span class="badge" id="sampleBadge">CONTOH</span>
       </div>
-      <p class="hint">Geser teks langsung di foto. Geser area kosong untuk memindahkan posisi foto.</p>
-      <div class="stage-actions">
-        <button class="btn" id="holdOrig" type="button">Tahan: lihat foto asli</button>
-        <button class="btn primary" id="saveOne" type="button">Simpan slide ini</button>
+      <div class="toolbar" id="toolbar">
+        <div class="nav"><button class="btn sm" id="prevS" type="button" aria-label="Slide sebelumnya">&#8249;</button><span id="navC" aria-live="polite">1/1</span><button class="btn sm" id="nextS" type="button" aria-label="Slide berikutnya">&#8250;</button></div>
+        <button class="btn sm" type="button" data-open="foto" aria-pressed="false">Foto</button>
+        <button class="btn sm" type="button" data-open="tone" aria-pressed="false">Tone</button>
+        <button class="btn sm" type="button" data-open="font" aria-pressed="false">Font</button>
+        <button class="btn sm" id="holdOrig" type="button">Tahan: lihat asli</button>
       </div>
-      <div class="strip" id="strip" aria-label="Daftar slide"></div>
+      <p class="hint">Ketuk foto untuk tambah teks. Ketuk teks atau aksesori untuk mengubahnya.</p>
+      
     </section>
 
     <section class="panel">
-      <div class="tabs" role="tablist" id="tabs">
-        <button class="tab" role="tab" data-tab="foto" aria-selected="true">Foto</button>
-        <button class="tab" role="tab" data-tab="teks" aria-selected="false">Teks</button>
-        <button class="tab" role="tab" data-tab="tone" aria-selected="false">Tone</button>
-        <button class="tab" role="tab" data-tab="aksesori" aria-selected="false">Aksesori</button>
-        <button class="tab" role="tab" data-tab="font" aria-selected="false">Font</button>
-        <button class="tab" role="tab" data-tab="simpan" aria-selected="false">Simpan</button>
+      <div class="pane home" data-pane="home">
+        <h2>Cara pakai</h2>
+        <p>Ketuk foto untuk menambah teks, lalu pilih posisi dan template.</p>
+        <p>Ketuk teks untuk mengubah isi, huruf, ukuran dan warna. Seret untuk memindahkan.</p>
+        <p>Ketuk "Stories of novancation!", kapsul atau "Swipe!" untuk mengganti warna dan posisinya.</p>
+        <p>Seret area kosong untuk menggeser posisi foto. Tombol Foto, Tone dan Font ada di bawah pratinjau. Tombol Simpan ada di pojok kanan atas.</p>
       </div>
 
       <!-- FOTO -->
       <div class="pane" data-pane="foto">
         <div class="row">
           <button class="btn primary" id="addPhotos" type="button">Tambah foto</button>
-          <button class="btn" id="toCollage" type="button">Jadikan collage 2 foto</button>
+          <div class="seg" id="layoutSeg" aria-label="Susunan foto"><button type="button" data-lay="single" aria-pressed="true">1 foto</button><button type="button" data-lay="v" aria-pressed="false">Collage atas-bawah</button><button type="button" data-lay="h" aria-pressed="false">Collage kiri-kanan</button></div>
           <input id="fileAdd" type="file" accept="image/*,.heic,.heif" multiple hidden>
           <input id="fileSecond" type="file" accept="image/*,.heic,.heif" hidden>
         </div>
@@ -148,12 +169,6 @@ input[type=color]{width:44px;height:36px;padding:2px;border:1px solid var(--line
         <div class="row"><button class="btn sm" id="resetPos" type="button">Reset posisi foto</button></div>
         <div class="field"><label for="aspect">Rasio slide (semua foto)</label>
           <select id="aspect"><option value="3:4">3:4 (seperti contohmu)</option><option value="4:5">4:5</option><option value="9:16">9:16 layar penuh</option></select></div>
-        <h2>Aksesori di slide ini</h2>
-        <div class="row" id="flags">
-          <button class="btn sm" type="button" data-flag="tag" aria-pressed="true">Stories of novancation!</button>
-          <button class="btn sm" type="button" data-flag="cap" aria-pressed="true">Kapsul watermark</button>
-          <button class="btn sm" type="button" data-flag="swipe" aria-pressed="true">Swipe! &gt;&gt;</button>
-        </div>
         <h2>Urutan slide</h2>
         <div class="row">
           <button class="btn sm" id="moveL" type="button">Geser ke kiri</button>
@@ -164,16 +179,6 @@ input[type=color]{width:44px;height:36px;padding:2px;border:1px solid var(--line
 
       <!-- TEKS -->
       <div class="pane" data-pane="teks" hidden>
-        <h2>Tambah teks</h2>
-        <div class="row" id="addText">
-          <button class="btn sm" type="button" data-add="cover">Template cover</button>
-          <button class="btn sm" type="button" data-add="judul">Judul tebal</button>
-          <button class="btn sm" type="button" data-add="script">Script</button>
-          <button class="btn sm" type="button" data-add="isiKiri">Isi rata kiri</button>
-          <button class="btn sm" type="button" data-add="isiKanan">Isi rata kanan</button>
-          <button class="btn sm" type="button" data-add="kecil">Teks kecil</button>
-          <button class="btn sm" type="button" data-add="bulat">Judul bulat besar</button>
-        </div>
         <h2>Teks di slide ini</h2>
         <div class="layers" id="layerList"></div>
         <p class="note" id="noLayers">Belum ada teks. Pilih salah satu tombol di atas.</p>
@@ -187,6 +192,8 @@ input[type=color]{width:44px;height:36px;padding:2px;border:1px solid var(--line
           <div class="sl"><span>Miring</span><input id="tRot" type="range" min="-45" max="45" step="1"><output id="tRotO"></output></div>
           <div class="row"><span class="lbl">Rata</span>
             <div class="seg" id="tAlign"><button type="button" data-al="left" aria-pressed="false">Kiri</button><button type="button" data-al="center" aria-pressed="false">Tengah</button><button type="button" data-al="right" aria-pressed="false">Kanan</button></div></div>
+          <div class="row"><span class="lbl">Tengah</span>
+            <div class="seg" id="tCenter"><button type="button" data-center="h">&#8596; Kiri-kanan</button><button type="button" data-center="v">&#8597; Atas-bawah</button><button type="button" data-center="both">Penuh</button></div></div>
           <div class="row"><span class="lbl">Warna</span><input id="tColor" type="color" aria-label="Warna teks">
             <div class="sw" id="tSw"></div></div>
           <div class="row"><button class="btn sm" id="tShadow" type="button" aria-pressed="true">Bayangan lembut</button>
@@ -203,22 +210,7 @@ input[type=color]{width:44px;height:36px;padding:2px;border:1px solid var(--line
           <button class="btn sm" id="toneAll" type="button">Terapkan ke semua foto</button>
         </div>
         <p class="note">Preset ini hasil tiruan dari perbandingan before-after kamu: lebih terang, hangat, bayangan diangkat, warna langit dan kayu lebih hidup. Geser sampai pas lalu pakai "Terapkan ke semua foto".</p>
-      </div>
-
-      <!-- AKSESORI -->
-      <div class="pane" data-pane="aksesori" hidden>
-        <p class="note">Teks dan posisi aksesori sudah dipatenkan. Yang bisa kamu ganti hanya warna.</p>
-        <div class="card">
-          <h2>Stories of novancation! dan Swipe!</h2>
-          <div class="row"><input id="cAcc" type="color" aria-label="Warna tulisan aksesori"><div class="sw" data-sw="color"></div></div>
-        </div>
-        <div class="card">
-          <h2>Kapsul watermark</h2>
-          <div class="row"><span class="lbl" style="width:52px">Kiri</span><input id="cCapL" type="color" aria-label="Warna kapsul kiri"><div class="sw" data-sw="capL"></div></div>
-          <div class="row"><span class="lbl" style="width:52px">Kanan</span><input id="cCapR" type="color" aria-label="Warna kapsul kanan"><div class="sw" data-sw="capR"></div></div>
-          <div class="row"><span class="lbl" style="width:52px">Posisi</span>
-            <div class="seg" id="capPos"><button type="button" data-pos="left" aria-pressed="true">Kiri bawah</button><button type="button" data-pos="center" aria-pressed="false">Tengah bawah</button></div></div>
-        </div>
+        <p class="note">Preset VSCO A6 dan AL3 adalah tiruan perkiraan (VSCO tidak merilis resepnya), bukan hasil persis. Geser slider, terutama Pudar, sampai mirip seleramu.</p>
       </div>
 
       <!-- FONT -->
@@ -228,21 +220,10 @@ input[type=color]{width:44px;height:36px;padding:2px;border:1px solid var(--line
         <input id="fontFile" type="file" accept=".ttf,.otf,.woff,.woff2" hidden>
       </div>
 
-      <!-- SIMPAN -->
-      <div class="pane" data-pane="simpan" hidden>
-        <div class="field"><label for="exSize">Ukuran hasil</label>
-          <select id="exSize"><option value="1512">Besar (lebar 1512 px, seperti aslinya)</option><option value="1080">TikTok (lebar 1080 px)</option></select></div>
-        <div class="field"><label for="exFmt">Format</label>
-          <select id="exFmt"><option value="png">PNG (paling tajam)</option><option value="jpg">JPG (lebih ringan)</option></select></div>
-        <div class="row">
-          <button class="btn primary" id="saveAll" type="button">Simpan semua slide (ZIP)</button>
-          <button class="btn" id="saveOne2" type="button">Simpan slide ini saja</button>
-        </div>
-        <p class="note" id="saveNote">Penyimpanan meminta konfirmasi dulu. Kalau tidak tersedia, hasilnya ditampilkan supaya bisa ditekan lama lalu disimpan.</p>
-      </div>
-    </section>
+            </section>
   </div>
 </div>
+<div id="pop" class="pop" hidden role="dialog" aria-label="Menu"></div>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <div id="results" hidden>
   <div class="box">
@@ -304,17 +285,17 @@ const LR = {
 
 const S = {
   aspect:'3:4', slides:[], cur:0, sel:null, part:0,
-  acc:{color:'#FFFFFF',capL:'#FFFFFF',capR:'#F5820F',capPos:'left'},
-  fonts:{sans:0,script:0,serif:0,hand:0,round:0}, custom:{}, tone0:'hangat',
+  acc:{color:'#FFFFFF',capL:'#FFFFFF',capR:'#F5820F',pos:{tag:'center',cap:'left',swipe:'right'},swipeFi:null},
+  fonts:{sans:0,script:0,serif:0,hand:0,round:0}, custom:{}, guides:null, tone0:'hangat',
   exp:{size:'1512',fmt:'png'}
 };
 HU = Math.round(WU*RATIOS[S.aspect]);
-const famOf = f => S.custom[f] ? '"UserFont_'+f+'"' : FONT_OPTS[f][S.fonts[f]].fam;
-function fontStr(lrKey,size){
+const famOf = (f,fi) => S.custom[f] ? '"UserFont_'+f+'"' : FONT_OPTS[f][(fi!=null && FONT_OPTS[f][fi]) ? fi : S.fonts[f]].fam;
+function fontStr(lrKey,size,fi){
   const lr = LR[lrKey], f = lr.f, custom = !!S.custom[f];
   const w = custom && f!=='sans' ? 400 : lr.w;
   const st = custom ? 'normal' : (lr.st||'normal');
-  return st+' '+w+' '+size+'px '+famOf(f)+','+FALLBACK[f];
+  return st+' '+w+' '+size+'px '+famOf(f,fi)+','+FALLBACK[f];
 }
 const loadedQ = new Set();
 function loadQ(q){
@@ -337,7 +318,7 @@ function saveSettings(){
 function loadSettings(){
   try{
     const j = JSON.parse(localStorage.getItem('novancation.v1')||'null'); if(!j) return;
-    Object.assign(S.acc,j.acc||{}); if(j.fonts) for(const k in S.fonts){ if(Number.isInteger(j.fonts[k]) && FONT_OPTS[k][j.fonts[k]]) S.fonts[k]=j.fonts[k]; }
+    if(j.acc){ const pp=j.acc.pos||{}; Object.assign(S.acc,j.acc); S.acc.pos=Object.assign({tag:'center',cap:'left',swipe:'right'},pp); } if(j.fonts) for(const k in S.fonts){ if(Number.isInteger(j.fonts[k]) && FONT_OPTS[k][j.fonts[k]]) S.fonts[k]=j.fonts[k]; }
     if(PRESETS[j.tone0]) S.tone0=j.tone0; Object.assign(S.exp,j.exp||{});
     if(RATIOS[j.aspect]){ S.aspect=j.aspect; HU=Math.round(WU*RATIOS[S.aspect]); }
   }catch(e){}
@@ -357,21 +338,23 @@ async function registerFont(role,buf,name){
 }
 
 /* ===== tone ===== */
-const ZERO = {exposure:0,contrast:0,highlights:0,shadows:0,temperature:0,tint:0,saturation:0,vibrance:0};
+const ZERO = {fade:0,exposure:0,contrast:0,highlights:0,shadows:0,temperature:0,tint:0,saturation:0,vibrance:0};
 const PRESETS = {
   hangat:{n:'Hangat standar (kamar, homestay)',v:{exposure:12,contrast:14,highlights:-12,shadows:22,temperature:14,tint:4,saturation:18,vibrance:14}},
   sunset:{n:'Langit dan sunset (cafe, pemandangan)',v:{exposure:10,contrast:18,highlights:-22,shadows:26,temperature:10,tint:8,saturation:30,vibrance:22}},
   makanan:{n:'Makanan',v:{exposure:10,contrast:16,highlights:-8,shadows:14,temperature:12,tint:2,saturation:22,vibrance:10}},
+  a6:{n:'VSCO A6 (mirip) - coklat lembut',v:{exposure:5,contrast:6,highlights:-10,shadows:12,temperature:16,tint:6,saturation:-12,vibrance:6,fade:30}},
+  al3:{n:'VSCO AL3 (mirip) - terang lembut',v:{exposure:14,contrast:-8,highlights:-14,shadows:24,temperature:6,tint:-2,saturation:-6,vibrance:10,fade:40}},
   asli:{n:'Tanpa edit',v:ZERO},
   custom:{n:'Kustom (hasil geseranmu)',v:ZERO}
 };
-const TONE = [['exposure','Kecerahan'],['contrast','Kontras'],['highlights','Highlight'],['shadows','Bayangan'],['temperature','Hangat'],['tint','Tint magenta'],['saturation','Saturasi'],['vibrance','Vibrance']];
+const TONE = [['exposure','Kecerahan'],['contrast','Kontras'],['highlights','Highlight'],['shadows','Bayangan'],['temperature','Hangat'],['tint','Tint magenta'],['saturation','Saturasi'],['vibrance','Vibrance'],['fade','Pudar (fade)']];
 function toneIsZero(t){ return TONE.every(([k]) => !t[k]); }
 function applyTone(ctx,w,h,t){
   const im = ctx.getImageData(0,0,w,h), d = im.data;
   const ex = Math.pow(2,t.exposure/100), c = 1+t.contrast/100*0.55;
   const sh = t.shadows/100*0.28, hi = t.highlights/100*0.28;
-  const T = t.temperature/100, tn = t.tint/100, sa = t.saturation/100, vb = t.vibrance/100;
+  const fa=(t.fade||0)/100*0.14; const T = t.temperature/100, tn = t.tint/100, sa = t.saturation/100, vb = t.vibrance/100;
   const rm = 1+T*0.12, bm = 1-T*0.16, gm = 1-tn*0.05;
   for(let i=0;i<d.length;i+=4){
     let r=d[i]/255*ex, g=d[i+1]/255*ex, b=d[i+2]/255*ex;
@@ -379,6 +362,7 @@ function applyTone(ctx,w,h,t){
     const add = sh*(1-lc)*(1-lc) + hi*lc*lc;
     r+=add; g+=add; b+=add;
     r=(r-.5)*c+.5; g=(g-.5)*c+.5; b=(b-.5)*c+.5;
+    r=fa+r*(1-fa); g=fa+g*(1-fa); b=fa+b*(1-fa);
     r*=rm; g*=gm; b*=bm;
     l=.2126*r+.7152*g+.0722*b;
     const mx=Math.max(r,g,b), mn=Math.min(r,g,b);
@@ -403,7 +387,7 @@ async function loadImg(file){
   return {id:uid(), c, name:file.name};
 }
 function newSlide(imgs,type){
-  return {id:uid(), type:type||'photo', imgs, crops:imgs.map(()=>({zoom:1,ox:0,oy:0})),
+  return {id:uid(), type:type||'photo', layout:'v', imgs, crops:imgs.map(()=>({zoom:1,ox:0,oy:0})),
     tone:{...PRESETS[S.tone0].v}, tonePreset:S.tone0, layers:[], flags:{tag:true,cap:true,swipe:true}, _cache:{}};
 }
 function sampleCanvas(){
@@ -441,7 +425,7 @@ function coverLayers(){
 
 /* ===== render ===== */
 const cur = () => S.slides[S.cur];
-function photoRects(sl){ return sl.type==='collage' ? [[0,0,WU,HU/2],[0,HU/2,WU,HU/2]] : [[0,0,WU,HU]]; }
+function photoRects(sl){ return sl.type!=='collage' ? [[0,0,WU,HU]] : sl.layout==='h' ? [[0,0,WU/2,HU],[WU/2,0,WU/2,HU]] : [[0,0,WU,HU/2],[0,HU/2,WU,HU/2]]; }
 function cropGeom(sl,i){
   const r = photoRects(sl)[i], im = sl.imgs[i]; if(!im) return null;
   const s = Math.max(r[2]/im.c.width, r[3]/im.c.height)*sl.crops[i].zoom;
@@ -455,7 +439,7 @@ function drawPhotos(ctx,sl,sc){
     const im = sl.imgs[i];
     if(!im){
       ctx.fillStyle='#39403b'; ctx.fillRect(r[0],r[1],r[2],r[3]);
-      ctx.fillStyle='#b9c2bb'; ctx.font='700 44px sans-serif'; ctx.textAlign='center'; ctx.fillText('Pilih foto bawah',r[0]+r[2]/2,r[1]+r[3]/2); ctx.textAlign='left';
+      ctx.fillStyle='#b9c2bb'; ctx.font='700 44px sans-serif'; ctx.textAlign='center'; ctx.fillText('Pilih foto kedua',r[0]+r[2]/2,r[1]+r[3]/2); ctx.textAlign='left';
     } else {
       const g = cropGeom(sl,i), cr = sl.crops[i];
       const cx = r[0]+r[2]/2+cr.ox*g.maxX, cy = r[1]+r[3]/2+cr.oy*g.maxY;
@@ -471,7 +455,7 @@ function makeBase(sl,sc){
   return c;
 }
 function getBase(sl,sc){
-  const k = [S.aspect,sl.type,sl.imgs.map(i=>i&&i.id).join(),JSON.stringify(sl.crops),JSON.stringify(sl.tone)].join('|');
+  const k = [S.aspect,sl.type,sl.layout,sl.imgs.map(i=>i&&i.id).join(),JSON.stringify(sl.crops),JSON.stringify(sl.tone)].join('|');
   const e = sl._cache[sc]; if(e && e.k===k) return e.c;
   const c = makeBase(sl,sc); sl._cache[sc]={k,c}; return c;
 }
@@ -489,7 +473,7 @@ function runsOf(line){
 function runFont(L,k){
   if(k==='serif') return fontStr('serif',L.size*1.04);
   if(k==='script') return fontStr('script',L.size*1.7);
-  return fontStr(L.role,L.size);
+  return fontStr(L.role,L.size,L.fi);
 }
 function meas(ctx,t,ls){
   if(!ls) return ctx.measureText(t).width;
@@ -525,33 +509,37 @@ function drawLayer(ctx,L,sc){
 const lum = hex => { const n=parseInt(hex.slice(1),16); return (.2126*(n>>16&255)+.7152*(n>>8&255)+.0722*(n&255))/255; };
 function rrect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 function drawAccessories(ctx,sl,sc){
-  const A = S.acc, f = sl.flags; ctx.textAlign='left'; ctx.textBaseline='alphabetic';
-  const baseY = HU-216;
+  const A=S.acc, f=sl.flags, P=A.pos; ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+  const baseY=HU-216, M=116; sl._abox={};
+  const place=(pos,w)=> pos==='left'?M : pos==='right'?WU-M-w : (WU-w)/2;
   if(f.tag){
     ctx.save(); ctx.fillStyle=A.color; setShadow(ctx,sc,true,6,1.5,.25);
-    ctx.font = fontStr('hand',37); const t='Stories of novancation!', ls=8, w=meas(ctx,t,ls)-ls;
-    drawRun(ctx,t,(WU-w)/2,HU*.083+12,ls); ctx.restore();
+    ctx.font=fontStr('hand',37); const t='Stories of novancation!', ls=8, w=meas(ctx,t,ls)-ls, x=place(P.tag,w);
+    drawRun(ctx,t,x,HU*.083+12,ls); ctx.restore();
+    sl._abox.tag={x,y:HU*.083-28,w,h:60};
   }
   if(f.cap){
     ctx.save(); const h=58, pad=34, ls=5, tl='Arcieved', tr='novantrinoviana';
-    ctx.font = fontStr('hand',33);
-    const wl = meas(ctx,tl,ls)-ls+pad*2, wr = meas(ctx,tr,ls)-ls+pad*2, tot = wl+wr;
-    const x0 = A.capPos==='center' ? (WU-tot)/2 : 116, y0 = baseY-h/2;
+    ctx.font=fontStr('hand',33);
+    const wl=meas(ctx,tl,ls)-ls+pad*2, wr=meas(ctx,tr,ls)-ls+pad*2, tot=wl+wr;
+    const x0=place(P.cap,tot), y0=baseY-h/2;
     setShadow(ctx,sc,true,12,3,.2);
     rrect(ctx,x0,y0,tot,h,h/2); ctx.fillStyle='#fff'; ctx.fill(); setShadow(ctx,sc,false);
     ctx.save(); rrect(ctx,x0,y0,tot,h,h/2); ctx.clip();
     ctx.fillStyle=A.capL; ctx.fillRect(x0,y0,wl,h); ctx.fillStyle=A.capR; ctx.fillRect(x0+wl,y0,wr,h); ctx.restore();
     const dark='#3E4B2D';
-    ctx.fillStyle = lum(A.capL)>.62 ? dark : '#fff'; drawRun(ctx,tl,x0+pad,baseY+11,ls);
-    ctx.fillStyle = lum(A.capR)>.62 ? dark : '#fff'; drawRun(ctx,tr,x0+wl+pad,baseY+11,ls);
-    ctx.restore();
+    ctx.fillStyle=lum(A.capL)>.62?dark:'#fff'; drawRun(ctx,tl,x0+pad,baseY+11,ls);
+    ctx.fillStyle=lum(A.capR)>.62?dark:'#fff'; drawRun(ctx,tr,x0+wl+pad,baseY+11,ls);
+    ctx.restore(); sl._abox.cap={x:x0,y:y0,w:tot,h};
   }
   if(f.swipe){
     ctx.save(); ctx.fillStyle=A.color; setShadow(ctx,sc,true,6,1.5,.25);
-    ctx.font = fontStr('hand',46); const g='>>'; ctx.font=fontStr('sansBold',42); const wg=ctx.measureText(g).width;
-    const rx = WU-125; ctx.fillText(g,rx-wg,baseY+14);
-    ctx.font = fontStr('script',68); const t='Swipe!', wt=ctx.measureText(t).width;
-    ctx.fillText(t,rx-wg-16-wt,baseY+18); ctx.restore();
+    ctx.font=fontStr('script',68,A.swipeFi); const done=sl.swipeText==='Done!', t=done?'Done!':'Swipe!', wt=ctx.measureText(t).width;
+    ctx.font=fontStr('sansBold',42); const g='>>', wg=done?0:ctx.measureText(g).width;
+    const total=done?wt:wt+16+wg, x=place(P.swipe,total);
+    ctx.font=fontStr('script',68,A.swipeFi); ctx.fillText(t,x,baseY+18);
+    if(!done){ ctx.font=fontStr('sansBold',42); ctx.fillText(g,x+wt+16,baseY+14); }
+    ctx.restore(); sl._abox.swipe={x,y:baseY-52,w:total,h:90};
   }
 }
 function renderTo(cv,sl,sc,opts){
@@ -569,90 +557,139 @@ function renderTo(cv,sl,sc,opts){
 }
 
 /* ===== stage ===== */
+const GM=116;
 const stage = $('#stage'); let holdRaw=false, raf=0;
 function redraw(){ if(raf) return; raf=requestAnimationFrame(()=>{ raf=0; drawStage(); }); }
 function drawStage(){
   const sl = cur(); if(!sl) return;
   renderTo(stage,sl,PS,{cache:true,raw:holdRaw});
+  if(!holdRaw && S.guides){
+    const ctx=stage.getContext('2d'), G=S.guides; ctx.setTransform(PS,0,0,PS,0,0); ctx.save(); ctx.lineWidth=3; ctx.setLineDash([18,12]);
+    const line=(x1,y1,x2,y2,on)=>{ ctx.strokeStyle=on?'#FF2E88':'rgba(255,255,255,.55)'; ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=on?0:3; if(on) ctx.setLineDash([]); else ctx.setLineDash([18,12]); ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); };
+    [GM,WU/2,WU-GM].forEach(x=>line(x,0,x,HU,G.v.includes(x)));
+    [GM,HU/2,HU-GM].forEach(y=>line(0,y,WU,y,G.h.includes(y)));
+    ctx.restore();
+  }
   if(!holdRaw){
     const L = sl.layers.find(l=>l.id===S.sel);
     if(L && L._box){
-      const ctx = stage.getContext('2d'), b=L._box;
-      ctx.setTransform(PS,0,0,PS,0,0); ctx.save(); ctx.translate(b.cx,b.cy); ctx.rotate(b.rot*Math.PI/180);
+      const ctx = stage.getContext('2d'), b=L._box, a=b.rot*Math.PI/180;
+      ctx.setTransform(PS,0,0,PS,0,0); ctx.save(); ctx.translate(b.cx,b.cy); ctx.rotate(a);
       ctx.setLineDash([14,10]); ctx.lineWidth=3; ctx.strokeStyle='#FFB35C'; ctx.shadowColor='rgba(0,0,0,.6)'; ctx.shadowBlur=4;
       ctx.strokeRect(-b.w/2-14,-b.h/2-10,b.w+28,b.h+20); ctx.restore();
+      const kx = WU/Math.max(120,stage.getBoundingClientRect().width||WU/3), r = 15*kx;
+      const lx=b.w/2+14, ly=-b.h/2-10;
+      const gx=b.cx+lx*Math.cos(a)-ly*Math.sin(a), gy=b.cy+lx*Math.sin(a)+ly*Math.cos(a);
+      L._xb={x:gx,y:gy,r};
+      ctx.setTransform(PS,0,0,PS,0,0); ctx.setLineDash([]); ctx.shadowColor='rgba(0,0,0,.45)'; ctx.shadowBlur=6;
+      ctx.fillStyle='#E5484D'; ctx.beginPath(); ctx.arc(gx,gy,r,0,7); ctx.fill();
+      ctx.shadowBlur=0; ctx.strokeStyle='#fff'; ctx.lineWidth=r*.2; ctx.lineCap='round';
+      const q=r*.38; ctx.beginPath(); ctx.moveTo(gx-q,gy-q); ctx.lineTo(gx+q,gy+q); ctx.moveTo(gx+q,gy-q); ctx.lineTo(gx-q,gy+q); ctx.stroke();
     }
   }
   $('#sampleBadge').hidden = !(sl.imgs[0] && sl.imgs[0].sample);
 }
-let thumbT=0;
-function drawThumbsSoon(){ clearTimeout(thumbT); thumbT=setTimeout(drawThumbs,220); }
-function drawThumbs(){
-  $$('#strip .thumb canvas').forEach((cv,i) => { const sl=S.slides[i]; if(sl) renderTo(cv,sl,.12,{cache:false}); });
-}
+function drawThumbsSoon(){}
 function buildStrip(){
-  const st = $('#strip');
-  st.innerHTML = S.slides.map((s,i)=>'<button class="thumb" type="button" data-i="'+i+'" aria-label="Slide '+(i+1)+'" aria-current="'+(i===S.cur)+'"><canvas></canvas><span>'+(i+1)+'</span></button>').join('')
-    + '<button class="thumb add" type="button" id="stripAdd" aria-label="Tambah foto">+</button>';
-  drawThumbs();
-  const a = st.querySelector('.thumb[aria-current="true"]'); if(a && a.scrollIntoView) a.scrollIntoView({inline:'nearest',block:'nearest'});
+  const n=S.slides.length; $('#navC').textContent=(S.cur+1)+'/'+n;
+  $('#prevS').disabled=S.cur<=0; $('#nextS').disabled=S.cur>=n-1;
 }
-$('#strip').addEventListener('click',e=>{
-  const b = e.target.closest('.thumb'); if(!b) return;
-  if(b.id==='stripAdd'){ $('#fileAdd').click(); return; }
-  S.cur = +b.dataset.i; S.sel=null; S.part=0; syncAll(); buildStrip(); redraw();
-});
+function goSlide(d){
+  const j=S.cur+d; if(j<0||j>=S.slides.length) return;
+  S.cur=j; S.sel=null; S.part=0; closePop(); syncAll(); buildStrip(); redraw();
+}
+$('#prevS').onclick=()=>goSlide(-1); $('#nextS').onclick=()=>goSlide(1);
+$('#addBtn').onclick=()=>$('#fileAdd').click();
 
-/* interaksi seret */
-let drag=null;
-function toUnits(e){ const r=stage.getBoundingClientRect(); return {x:(e.clientX-r.left)/r.width*WU, y:(e.clientY-r.top)/r.height*HU, r}; }
+/* interaksi: ketuk = buka menu, seret = geser */
+let drag=null, tapInfo=null;
+function toUnits(e){ const r=stage.getBoundingClientRect(); return {x:(e.clientX-r.left)/r.width*WU, y:(e.clientY-r.top)/r.height*HU}; }
 function hitTest(L,p){
   if(!L._box) return false; const b=L._box, a=-b.rot*Math.PI/180, dx=p.x-b.cx, dy=p.y-b.cy;
   const lx=dx*Math.cos(a)-dy*Math.sin(a), ly=dx*Math.sin(a)+dy*Math.cos(a);
   return Math.abs(lx)<=b.w/2+24 && Math.abs(ly)<=b.h/2+24;
 }
+function centerLayer(L,mode){
+  if(mode==='h'||mode==='both'){ L.align='center'; L.x=.5; }
+  if(mode==='v'||mode==='both'){ L.y=.5; }
+}
+function deleteLayer(id){
+  const sl=cur(); sl.layers=sl.layers.filter(l=>l.id!==id); if(S.sel===id) S.sel=null;
+  closePop(); syncText(); redraw(); drawThumbsSoon();
+}
+function hitAcc(sl,p){
+  const a=sl._abox||{};
+  for(const k of ['swipe','cap','tag']){ const b=a[k]; if(b && p.x>=b.x-16 && p.x<=b.x+b.w+16 && p.y>=b.y-16 && p.y<=b.y+b.h+16) return k; }
+  return null;
+}
 stage.addEventListener('pointerdown',e=>{
+  closePop();
   const sl=cur(), p=toUnits(e);
-  const hit=[...sl.layers].reverse().find(L=>hitTest(L,p));
-  if(hit){ S.sel=hit.id; drag={t:'layer',L:hit,sx:e.clientX,sy:e.clientY,x0:hit.x,y0:hit.y}; syncText(); showTab('teks'); }
-  else {
-    const idx = sl.type==='collage' && p.y>HU/2 ? 1 : 0; S.part=idx;
-    drag={t:'pan',idx,sx:e.clientX,sy:e.clientY,ox:sl.crops[idx].ox,oy:sl.crops[idx].oy}; syncFoto();
-  }
+  const sel0=sl.layers.find(l=>l.id===S.sel);
+  if(sel0 && sel0._xb && Math.hypot(p.x-sel0._xb.x,p.y-sel0._xb.y)<=sel0._xb.r*1.5){ deleteLayer(sel0.id); tapInfo=null; drag=null; return; }
+  const acc=hitAcc(sl,p);
+  const hit = acc ? null : [...sl.layers].reverse().find(L=>hitTest(L,p));
+  tapInfo={x:e.clientX,y:e.clientY,acc,layer:hit,moved:false,p};
+  if(hit){ S.sel=hit.id; drag={t:'layer',L:hit,sx:e.clientX,sy:e.clientY,x0:hit.x,y0:hit.y}; syncText(); openPanel('teks'); }
+  else if(!acc){ const idx=sl.type==='collage'&&(sl.layout==='h'?p.x>WU/2:p.y>HU/2)?1:0; S.part=idx; drag={t:'pan',idx,sx:e.clientX,sy:e.clientY,ox:sl.crops[idx].ox,oy:sl.crops[idx].oy}; syncFoto(); }
   stage.setPointerCapture(e.pointerId); redraw();
 });
 stage.addEventListener('pointermove',e=>{
+  if(tapInfo && Math.hypot(e.clientX-tapInfo.x,e.clientY-tapInfo.y)>6) tapInfo.moved=true;
   if(!drag) return; const r=stage.getBoundingClientRect();
   const dx=(e.clientX-drag.sx)/r.width*WU, dy=(e.clientY-drag.sy)/r.height*HU;
-  if(drag.t==='layer'){ drag.L.x=clamp(drag.x0+dx/WU,-.2,1.2); drag.L.y=clamp(drag.y0+dy/HU,-.1,1.1); }
+  if(drag.t==='layer'){ const L=drag.L; let nx=clamp(drag.x0+dx/WU,-.2,1.2), ny=clamp(drag.y0+dy/HU,-.1,1.1);
+    const b=L._box; S.guides={v:[],h:[]};
+    if(b){
+      const a=b.rot*Math.PI/180, ex=(b.w*Math.abs(Math.cos(a))+b.h*Math.abs(Math.sin(a)))/2, ey=(b.w*Math.abs(Math.sin(a))+b.h*Math.abs(Math.cos(a)))/2;
+      const th=10*WU/r.width, M=GM;
+      const cx=b.cx+(nx-L.x)*WU, cy=b.cy+(ny-L.y)*HU;
+      const pick=(c,ext,targets)=>{ let best=null; for(const [pos,off] of targets){ const d=pos-(c+off*ext); if(Math.abs(d)<=th && (!best||Math.abs(d)<Math.abs(best.d))) best={d,pos}; } return best; };
+      const bx=pick(cx,ex,[[WU/2,0],[M,-1],[WU-M,1]]), by=pick(cy,ey,[[HU/2,0],[M,-1],[HU-M,1]]);
+      if(bx){ nx+=bx.d/WU; S.guides.v.push(bx.pos); }
+      if(by){ ny+=by.d/HU; S.guides.h.push(by.pos); }
+    }
+    L.x=nx; L.y=ny; }
   else { const sl=cur(), g=cropGeom(sl,drag.idx); if(!g) return; const c=sl.crops[drag.idx];
     if(g.maxX>0) c.ox=clamp(drag.ox+dx/g.maxX,-1,1); if(g.maxY>0) c.oy=clamp(drag.oy+dy/g.maxY,-1,1); }
   redraw();
 });
-const endDrag=()=>{ if(drag){ drag=null; drawThumbsSoon(); } };
-stage.addEventListener('pointerup',endDrag); stage.addEventListener('pointercancel',endDrag);
+function endTap(e){
+  const t=tapInfo; tapInfo=null;
+  if(drag){ drag=null; S.guides=null; drawThumbsSoon(); redraw(); }
+  if(!t||t.moved||e.type==='pointercancel') return;
+  if(t.acc) openAccPop(t.acc,e);
+  else if(t.layer) openFontPop(t.layer,e);
+  else{ if(S.sel){ S.sel=null; syncText(); redraw(); } openAddPop(t.p,e); }
+}
+stage.addEventListener('pointerup',endTap); stage.addEventListener('pointercancel',endTap);
 
 const hold=$('#holdOrig');
 ['pointerdown'].forEach(n=>hold.addEventListener(n,e=>{ holdRaw=true; hold.setPointerCapture(e.pointerId); redraw(); }));
 ['pointerup','pointercancel','lostpointercapture'].forEach(n=>hold.addEventListener(n,()=>{ if(holdRaw){ holdRaw=false; redraw(); } }));
 hold.style.touchAction='none'; hold.style.userSelect='none';
 
-/* ===== panel: tab ===== */
-function showTab(n){
-  $$('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===n)));
-  $$('.pane[data-pane]').forEach(p=>p.hidden = p.dataset.pane!==n);
+/* ===== panel (dibuka dari toolbar atau saat teks diketuk) ===== */
+let openName=null;
+function openPanel(n,toggle){
+  if(toggle && openName===n) n=null;
+  openName=n;
+  $$('.pane[data-pane]').forEach(p=>{ p.hidden = p.dataset.pane!==(n||'home'); });
+  $('.panel').classList.toggle('closed',!n);
+  $$('#toolbar [data-open]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.open===n)));
 }
-$('#tabs').addEventListener('click',e=>{ const t=e.target.closest('.tab'); if(t) showTab(t.dataset.tab); });
+$('#toolbar').addEventListener('click',e=>{ const b=e.target.closest('[data-open]'); if(b) openPanel(b.dataset.open,true); });
 
 /* ===== panel: foto ===== */
 function syncFoto(){
   const sl=cur(); const col = sl.type==='collage';
-  $('#collageBox').hidden=!col; $('#toCollage').textContent = col ? 'Kembali jadi 1 foto' : 'Jadikan collage 2 foto';
-  $$('#partSeg button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.part===S.part)));
-  $('#pickSecond').textContent = sl.imgs[1] ? 'Ganti foto bawah' : 'Pilih foto bawah';
+  const hz = sl.layout==='h';
+  $('#collageBox').hidden=!col;
+  $$('#layoutSeg button').forEach(b=>b.setAttribute('aria-pressed',String(col ? b.dataset.lay===(hz?'h':'v') : b.dataset.lay==='single')));
+  $$('#partSeg button').forEach(b=>{ b.textContent = +b.dataset.part===0 ? (hz?'Kiri':'Atas') : (hz?'Kanan':'Bawah'); b.setAttribute('aria-pressed',String(+b.dataset.part===S.part)); });
+  $('#pickSecond').textContent = (sl.imgs[1] ? 'Ganti' : 'Pilih')+' foto '+(hz?'kanan':'bawah');
   const c = sl.crops[col?S.part:0] || sl.crops[0]; $('#zoom').value=Math.round(c.zoom*100); $('#zoomOut').textContent=Math.round(c.zoom*100)+'%';
   $('#aspect').value=S.aspect;
-  $$('#flags button').forEach(b=>b.setAttribute('aria-pressed',String(!!sl.flags[b.dataset.flag])));
 }
 function toast(msg,ms){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast.t); if(ms!==0) toast.t=setTimeout(()=>t.hidden=true,ms||2600); }
 async function addFiles(files){
@@ -668,11 +705,16 @@ async function addFiles(files){
 }
 $('#addPhotos').onclick=()=>$('#fileAdd').click();
 $('#fileAdd').onchange=e=>{ addFiles(e.target.files); e.target.value=''; };
-$('#toCollage').onclick=()=>{
-  const sl=cur();
-  if(sl.type==='collage'){ sl.type='photo'; sl.imgs.length=1; sl.crops.length=1; sl.flags={tag:true,cap:true,swipe:true}; S.part=0; }
-  else { sl.type='collage'; sl.imgs[1]=null; sl.crops[1]={zoom:1,ox:0,oy:0}; sl.flags={tag:false,cap:false,swipe:false}; S.part=0; }
-  syncAll(); drawThumbsSoon(); redraw();
+$('#layoutSeg').onclick=e=>{
+  const b=e.target.closest('button'); if(!b) return; const sl=cur(), L=b.dataset.lay, fresh=()=>({zoom:1,ox:0,oy:0});
+  if(L==='single'){
+    if(sl.type==='collage'){ sl.type='photo'; sl.imgs.length=1; sl.crops=[fresh()]; sl.flags={tag:true,cap:true,swipe:true}; }
+  } else {
+    if(sl.type!=='collage'){ sl.type='collage'; sl.imgs[1]=null; sl.crops=[fresh(),fresh()]; sl.flags={tag:false,cap:false,swipe:false}; }
+    else sl.crops=sl.crops.map(fresh);
+    sl.layout=L;
+  }
+  S.part=0; syncAll(); drawThumbsSoon(); redraw();
 };
 $('#pickSecond').onclick=()=>$('#fileSecond').click();
 $('#fileSecond').onchange=async e=>{
@@ -684,7 +726,6 @@ $('#partSeg').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; S.
 $('#zoom').oninput=e=>{ const sl=cur(), i=sl.type==='collage'?S.part:0; if(!sl.crops[i]) return; sl.crops[i].zoom=+e.target.value/100; $('#zoomOut').textContent=e.target.value+'%'; redraw(); drawThumbsSoon(); };
 $('#resetPos').onclick=()=>{ const sl=cur(), i=sl.type==='collage'?S.part:0; if(sl.crops[i]){ sl.crops[i]={zoom:1,ox:0,oy:0}; syncFoto(); redraw(); drawThumbsSoon(); } };
 $('#aspect').onchange=e=>{ S.aspect=e.target.value; HU=Math.round(WU*RATIOS[S.aspect]); saveSettings(); redraw(); buildStrip(); };
-$('#flags').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; const f=cur().flags; f[b.dataset.flag]=!f[b.dataset.flag]; syncFoto(); redraw(); drawThumbsSoon(); };
 $('#moveL').onclick=()=>moveSlide(-1); $('#moveR').onclick=()=>moveSlide(1);
 function moveSlide(d){ const j=S.cur+d; if(j<0||j>=S.slides.length) return; [S.slides[S.cur],S.slides[j]]=[S.slides[j],S.slides[S.cur]]; S.cur=j; buildStrip(); }
 $('#delSlide').onclick=()=>{
@@ -713,15 +754,9 @@ function syncText(){
   $('#tShadow').setAttribute('aria-pressed',String(L.shadow));
 }
 function touchL(fn){ const L=curLayer(); if(!L) return; fn(L); redraw(); drawThumbsSoon(); }
-$('#addText').onclick=e=>{
-  const b=e.target.closest('button'); if(!b) return; const sl=cur();
-  if(b.dataset.add==='cover'){ const ls=coverLayers(); sl.layers.push(...ls); S.sel=ls[0].id; }
-  else { const L=mkLayer(b.dataset.add); sl.layers.push(L); S.sel=L.id; }
-  syncText(); redraw(); drawThumbsSoon();
-};
 $('#layerList').onclick=e=>{ const b=e.target.closest('.chip'); if(!b) return; S.sel=b.dataset.id; syncText(); redraw(); };
 $('#tx').oninput=e=>touchL(L=>{ L.text=e.target.value; const c=$('#layerList .chip[aria-pressed="true"]'); if(c) c.textContent=L.text.split('\n')[0].replace(/[*~<>&]/g,'')||'(kosong)'; });
-$('#tRole').onchange=e=>touchL(L=>{ L.role=e.target.value; });
+$('#tRole').onchange=e=>touchL(L=>{ L.role=e.target.value; L.fi=undefined; });
 $('#tSize').oninput=e=>touchL(L=>{ L.size=+e.target.value; $('#tSizeO').textContent=L.size; });
 $('#tLs').oninput=e=>touchL(L=>{ L.ls=+e.target.value; $('#tLsO').textContent=L.ls; });
 $('#tLh').oninput=e=>touchL(L=>{ L.lh=+e.target.value/100; $('#tLhO').textContent=L.lh.toFixed(2); });
@@ -729,11 +764,12 @@ $('#tRot').oninput=e=>touchL(L=>{ L.rot=+e.target.value; $('#tRotO').textContent
 $('#tAlign').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; touchL(L=>{
   const bx=L._box; if(bx){ const old=L.align; const left=bx.cx-bx.w/2, right=bx.cx+bx.w/2, ctr=bx.cx;
     L.align=b.dataset.al; L.x=(L.align==='left'?left:L.align==='right'?right:ctr)/WU; } else L.align=b.dataset.al; }); syncText(); };
+$('#tCenter').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; touchL(L=>centerLayer(L,b.dataset.center)); syncText(); };
 $('#tColor').oninput=e=>touchL(L=>{ L.color=e.target.value; $$('#tSw button').forEach(b=>b.setAttribute('aria-pressed','false')); });
 $('#tSw').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; touchL(L=>{ L.color=b.dataset.c; }); syncText(); };
 $('#tShadow').onclick=()=>{ touchL(L=>{ L.shadow=!L.shadow; }); syncText(); };
 $('#tDup').onclick=()=>{ const L=curLayer(); if(!L) return; const c={...L,id:uid(),x:clamp(L.x+.03,0,1),y:clamp(L.y+.03,0,1)}; delete c._box; cur().layers.push(c); S.sel=c.id; syncText(); redraw(); };
-$('#tDel').onclick=()=>{ const sl=cur(); sl.layers=sl.layers.filter(l=>l.id!==S.sel); S.sel=null; syncText(); redraw(); drawThumbsSoon(); };
+$('#tDel').onclick=()=>{ if(S.sel) deleteLayer(S.sel); };
 
 /* ===== panel: tone ===== */
 $('#preset').innerHTML=Object.entries(PRESETS).map(([k,v])=>'<option value="'+k+'">'+v.n+'</option>').join('');
@@ -746,21 +782,102 @@ $('#preset').onchange=e=>{ const sl=cur(), k=e.target.value; if(k==='custom') re
 $('#toneSliders').oninput=e=>{ const i=e.target; if(!i.dataset.tone) return; const sl=cur(); sl.tone[i.dataset.tone]=+i.value; i.nextElementSibling.textContent=i.value; sl.tonePreset='custom'; $('#preset').value='custom'; redraw(); drawThumbsSoon(); };
 $('#toneAll').onclick=()=>{ const t=cur(); S.slides.forEach(s=>{ s.tone={...t.tone}; s.tonePreset=t.tonePreset; }); redraw(); drawThumbsSoon(); toast('Tone dipakai di semua foto'); };
 
-/* ===== panel: aksesori ===== */
-const SW_CAPR=['#F5820F','#D99A7F','#3F7388','#FFFFFF','#2E3A2A'];
-const SW_ACC=['#FFFFFF','#FFF1DC','#2E3A2A'];
-function paintSw(){
-  const m={color:SW_ACC,capL:['#FFFFFF','#FFF1DC','#F5820F','#D99A7F','#3F7388'],capR:SW_CAPR};
-  $$('.sw[data-sw]').forEach(box=>{ const k=box.dataset.sw;
-    box.innerHTML=m[k].map(c=>'<button type="button" style="background:'+c+'" data-c="'+c+'" aria-label="Warna '+c+'" aria-pressed="'+(S.acc[k].toLowerCase()===c.toLowerCase())+'"></button>').join(''); });
-  $('#cAcc').value=S.acc.color; $('#cCapL').value=S.acc.capL; $('#cCapR').value=S.acc.capR;
-  $$('#capPos button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.pos===S.acc.capPos)));
+/* ===== menu kecil: tambah teks dan aksesori ===== */
+const pop=$('#pop');
+const POS_V={top:.17,mid:.5,bottom:.74};
+const TPL=[['judul','Judul tebal'],['script','Script'],['isi','Isi / detail'],['kecil','Teks kecil'],['bulat','Judul bulat besar'],['cover','Template cover (3 teks)']];
+const ACCN={tag:'Stories of novancation!',cap:'Kapsul watermark',swipe:'Swipe! >>'};
+const POS_OPTS=[['left','Kiri'],['center','Tengah'],['right','Kanan']];
+let addPos={v:'mid',h:'center'};
+function closePop(){ pop.hidden=true; pop.innerHTML=''; delete pop.dataset.acc; delete pop.dataset.font; delete pop.dataset.save; }
+function placePop(e){
+  pop.hidden=false;
+  if(matchMedia('(max-width:880px)').matches){ pop.classList.add('sheet'); pop.style.left=''; pop.style.top=''; }
+  else { pop.classList.remove('sheet'); const w=pop.offsetWidth, h=pop.offsetHeight;
+    const sr=stage.getBoundingClientRect(); pop.style.left=Math.max(8,Math.min(sr.right+16,innerWidth-w-12))+'px'; pop.style.top=Math.max(8,Math.min(e.clientY-h/2,innerHeight-h-12))+'px'; }
 }
-$$('.sw[data-sw]').forEach(box=>box.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; S.acc[box.dataset.sw]=b.dataset.c; saveSettings(); paintSw(); redraw(); drawThumbsSoon(); }));
-$('#cAcc').oninput=e=>{ S.acc.color=e.target.value; saveSettings(); redraw(); drawThumbsSoon(); };
-$('#cCapL').oninput=e=>{ S.acc.capL=e.target.value; saveSettings(); redraw(); drawThumbsSoon(); };
-$('#cCapR').oninput=e=>{ S.acc.capR=e.target.value; saveSettings(); redraw(); drawThumbsSoon(); };
-$('#capPos').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; S.acc.capPos=b.dataset.pos; saveSettings(); paintSw(); redraw(); drawThumbsSoon(); };
+document.addEventListener('pointerdown',e=>{ if(!pop.hidden && !pop.contains(e.target) && e.target!==stage && !e.target.closest('#saveBtn')) closePop(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closePop(); });
+const segHtml=(key,opts,cur)=>'<div class="seg" data-seg="'+key+'">'+opts.map(([v,l])=>'<button type="button" data-v="'+v+'" aria-pressed="'+(cur===v)+'">'+l+'</button>').join('')+'</div>';
+function renderAddPop(){
+  delete pop.dataset.acc;
+  const hidden=['tag','cap','swipe'].filter(k=>!cur().flags[k]);
+  pop.innerHTML='<h3>Tambah teks</h3>'
+   +'<div class="row"><span class="lbl" style="width:46px">Posisi</span>'+segHtml('v',[['top','Atas'],['mid','Tengah'],['bottom','Bawah']],addPos.v)+'</div>'
+   +'<div class="row"><span class="lbl" style="width:46px">Rata</span>'+segHtml('h',POS_OPTS,addPos.h)+'</div>'
+   +'<div class="tpl">'+TPL.map(([k,l])=>'<button type="button" class="btn sm" data-tpl="'+k+'">'+l+'</button>').join('')+'</div>'
+   +(hidden.length?'<div class="row"><span class="note">Tampilkan lagi:</span>'+hidden.map(k=>'<button class="btn sm" type="button" data-show="'+k+'">'+ACCN[k]+'</button>').join('')+'</div>':'');
+}
+function openAddPop(p,e){
+  addPos={v:p.y<HU/3?'top':p.y>HU*2/3?'bottom':'mid', h:p.x<WU/3?'left':p.x>WU*2/3?'right':'center'};
+  renderAddPop(); placePop(e);
+}
+function addTemplate(k){
+  const sl=cur();
+  if(k==='cover'){ const ls=coverLayers(); sl.layers.push(...ls); S.sel=ls[0].id; }
+  else { const L=mkLayer(k==='isi'?'isiKiri':k); L.align=addPos.h; L.x=addPos.h==='left'?.075:addPos.h==='right'?.925:.5; L.y=POS_V[addPos.v]; sl.layers.push(L); S.sel=L.id; }
+  syncText(); openPanel('teks'); redraw(); drawThumbsSoon();
+}
+const swHtml=(key,list)=>'<div class="sw" data-sw="'+key+'">'+list.map(c=>'<button type="button" style="background:'+c+'" data-c="'+c+'" aria-label="Warna '+c+'" aria-pressed="'+(S.acc[key].toLowerCase()===c.toLowerCase())+'"></button>').join('')+'<input type="color" data-ci="'+key+'" value="'+S.acc[key]+'" aria-label="Warna lain"></div>';
+function renderAccPop(k){
+  pop.dataset.acc=k; let col;
+  if(k==='cap') col='<div class="field"><span class="lbl">Warna kiri</span>'+swHtml('capL',['#FFFFFF','#FFF1DC','#F5820F','#D99A7F','#3F7388'])+'</div><div class="field"><span class="lbl">Warna kanan</span>'+swHtml('capR',['#F5820F','#D99A7F','#3F7388','#FFFFFF','#2E3A2A'])+'</div>';
+  else col='<div class="field"><span class="lbl">Warna tulisan</span>'+swHtml('color',['#FFFFFF','#FFF1DC','#2E3A2A'])+'<span class="note">Dipakai sama oleh Stories of novancation! dan Swipe!</span></div>';
+  pop.innerHTML='<h3>'+ACCN[k]+'</h3>'+(k==='swipe'?'<div class="field"><span class="lbl">Tulisan</span>'+segHtml('swtext',[['Swipe!','Swipe! >>'],['Done!','Done!']],cur().swipeText||'Swipe!')+'</div>':'')+col+(k==='swipe'?swipeFontHtml():'')+'<div class="field"><span class="lbl">Posisi</span>'+segHtml('accpos',POS_OPTS,S.acc.pos[k])+'</div>'
+    +'<div class="row"><button class="btn sm danger" type="button" data-hide="'+k+'">Sembunyikan di slide ini</button><button class="btn sm primary" type="button" data-close>Selesai</button></div>';
+}
+function swipeFontHtml(){
+  if(S.custom.script) return '<div class="field"><span class="lbl">Font Swipe!</span><span class="note">Memakai font script unggahanmu ('+S.custom.script.replace(/[<>&"]/g,'')+'). Lepas di tab Font untuk memilih font lain.</span></div>';
+  const sel=S.acc.swipeFi!=null?S.acc.swipeFi:S.fonts.script;
+  return '<div class="field"><span class="lbl">Font Swipe!</span><div class="tpl">'+FONT_OPTS.script.map((o,i)=>'<button type="button" class="btn sm fp" data-swfont="'+i+'" aria-pressed="'+(sel===i)+'" style="font-family:'+o.fam+',cursive">'+o.n+'</button>').join('')+'</div></div>';
+}
+function openAccPop(k,e){ if(k==='swipe') FONT_OPTS.script.forEach(o=>loadQ(o.q)); renderAccPop(k); placePop(e); }
+const FONT_GROUPS=[['sansBold','Judul tebal','sans'],['sansSemi','Isi semibold','sans'],['script','Script','script'],['serif','Serif miring','serif'],['hand','Tulisan kecil','hand'],['round','Bulat besar','round']];
+function renderFontPop(L){
+  pop.dataset.font=L.id; delete pop.dataset.acc;
+  let h='<h3>Pilih font</h3>';
+  FONT_GROUPS.filter(g=>g[0]===L.role).forEach(([k,label,f])=>{
+    const sel=L.fi!=null?L.fi:S.fonts[f];
+    h+='<div class="field"><span class="lbl">'+label+'</span><div class="tpl">';
+    if(S.custom[f]) h+='<button type="button" class="btn sm fp" data-fontpick data-role="'+k+'" data-fi="" aria-pressed="'+(L.role===k)+'" style="font-family:\'UserFont_'+f+'\'">'+S.custom[f].replace(/[<>&"]/g,'')+'</button>';
+    else FONT_OPTS[f].forEach((o,i)=>{
+      h+='<button type="button" class="btn sm fp" data-fontpick data-role="'+k+'" data-fi="'+i+'" aria-pressed="'+(L.role===k&&sel===i)+'" style="font-family:'+o.fam+','+FALLBACK[f]+';font-weight:'+LR[k].w+';font-style:'+(LR[k].st||'normal')+'">'+o.n.replace(/ \(.*$/,'')+'</button>';
+    });
+    h+='</div></div>';
+  });
+  h+='<div class="field"><span class="lbl">Posisikan di tengah</span><div class="tpl"><button type="button" class="btn sm" data-center="h">&#8596; Kiri-kanan</button><button type="button" class="btn sm" data-center="v">&#8597; Atas-bawah</button><button type="button" class="btn sm" data-center="both">Tengah penuh</button></div></div>';
+  h+='<div class="row"><button class="btn sm danger" type="button" data-deltext>Hapus teks</button><button class="btn sm primary" type="button" data-close>Selesai</button></div>';
+  pop.innerHTML=h;
+}
+function openFontPop(L,e){
+  FONT_OPTS[LR[L.role].f].forEach(o=>loadQ(o.q));
+  renderFontPop(L); placePop(e);
+}
+function pickFont(btn){
+  const L=cur().layers.find(l=>l.id===pop.dataset.font); if(!L) return;
+  L.role=btn.dataset.role; L.fi = btn.dataset.fi==='' ? undefined : +btn.dataset.fi;
+  const sc=pop.scrollTop; renderFontPop(L); pop.scrollTop=sc; syncText(); redraw(); drawThumbsSoon();
+}
+pop.addEventListener('click',e=>{
+  { const fp=e.target.closest('[data-fontpick]'); if(fp){ pickFont(fp); return; }
+    const ce=e.target.closest('[data-center]'); if(ce){ const L=cur().layers.find(l=>l.id===pop.dataset.font); if(L){ centerLayer(L,ce.dataset.center); syncText(); redraw(); drawThumbsSoon(); } return; }
+    if(e.target.closest('[data-deltext]')){ deleteLayer(pop.dataset.font); return; }
+    const sf=e.target.closest('[data-swfont]'); if(sf){ S.acc.swipeFi=+sf.dataset.swfont; saveSettings(); const st=pop.scrollTop; renderAccPop('swipe'); pop.scrollTop=st; redraw(); drawThumbsSoon(); return; }
+    const sv=e.target.closest('[data-save]'); if(sv){ closePop(); doSave(sv.dataset.save==='all'); return; } }
+  const k=pop.dataset.acc, T=e.target;
+  const sg=T.closest('[data-seg] button');
+  if(sg){ const key=sg.parentNode.dataset.seg;
+    if(key==='swtext'){ cur().swipeText=sg.dataset.v; renderAccPop('swipe'); redraw(); drawThumbsSoon(); }
+    else if(key==='accpos'){ S.acc.pos[k]=sg.dataset.v; saveSettings(); renderAccPop(k); redraw(); drawThumbsSoon(); }
+    else if(key==='fmt'||key==='size'){ S.exp[key]=sg.dataset.v; saveSettings(); renderSavePop(); }
+    else { addPos[key]=sg.dataset.v; renderAddPop(); } return; }
+  const sw=T.closest('.sw button'); if(sw){ S.acc[sw.parentNode.dataset.sw]=sw.dataset.c; saveSettings(); renderAccPop(k); redraw(); drawThumbsSoon(); return; }
+  const tp=T.closest('[data-tpl]'); if(tp){ addTemplate(tp.dataset.tpl); closePop(); return; }
+  const sh=T.closest('[data-show]'); if(sh){ cur().flags[sh.dataset.show]=true; closePop(); redraw(); drawThumbsSoon(); return; }
+  const hd=T.closest('[data-hide]'); if(hd){ cur().flags[hd.dataset.hide]=false; closePop(); redraw(); drawThumbsSoon(); return; }
+  if(T.closest('[data-close]')) closePop();
+});
+pop.addEventListener('input',e=>{ const ci=e.target.dataset.ci; if(!ci) return; S.acc[ci]=e.target.value; saveSettings(); redraw(); drawThumbsSoon(); });
 
 /* ===== panel: font ===== */
 let fontTarget=null;
@@ -804,13 +921,7 @@ function showResults(items){
 $('#closeRes').onclick=()=>{ $('#results').hidden=true; $('#resImgs').innerHTML=''; };
 async function saveFiles(list){
   const api=await getDl();
-  if(!api){
-    if(!window.claude){ // dibuka sebagai file biasa: unduh langsung
-      for(const x of list){ const a=document.createElement('a'); a.href=URL.createObjectURL(x.blob); a.download=x.name; document.body.appendChild(a); a.click(); a.remove(); await new Promise(r=>setTimeout(r,400)); }
-      toast('Diunduh'); return;
-    }
-    showResults(list.map(x=>x.blob)); return;
-  }
+  if(!api){ list.forEach((x,i)=>setTimeout(()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(x.blob); a.download=x.name; document.body.appendChild(a); a.click(); a.remove(); },i*350)); toast('Disimpan'); return; }
   try{
     if(list.length===1){ await api.save({filename:list[0].name,data:list[0].blob}); }
     else if(window.JSZip){ const z=new JSZip(); list.forEach(x=>z.file(x.name,x.blob)); const zb=await z.generateAsync({type:'blob'}); await api.save({filename:'novancation-slides.zip',data:zb}); }
@@ -830,9 +941,23 @@ async function doSave(all){
     $('#toast').hidden=true; await saveFiles(list);
   }catch(e){ toast('Gagal memproses foto'); }
 }
-$('#saveOne').onclick=()=>doSave(false); $('#saveOne2').onclick=()=>doSave(false); $('#saveAll').onclick=()=>doSave(true);
-$('#exSize').onchange=e=>{ S.exp.size=e.target.value; saveSettings(); };
-$('#exFmt').onchange=e=>{ S.exp.fmt=e.target.value; saveSettings(); };
+function renderSavePop(){
+  delete pop.dataset.acc; delete pop.dataset.font; pop.dataset.save='1';
+  pop.innerHTML='<h3>Simpan</h3>'
+   +'<div class="row"><span class="lbl" style="width:58px">Format</span>'+segHtml('fmt',[['png','PNG'],['jpg','JPG']],S.exp.fmt)+'</div>'
+   +'<div class="row"><span class="lbl" style="width:58px">Ukuran</span>'+segHtml('size',[['1512','Besar 1512'],['1080','TikTok 1080']],S.exp.size)+'</div>'
+   +'<div class="row"><button class="btn primary" type="button" data-save="one">Simpan slide ini</button><button class="btn" type="button" data-save="all">Simpan semua slide'+(S.slides.length>1?' ('+S.slides.length+')':'')+'</button></div>'
+   +'<span class="note">Slide ini = slide yang sedang tampil. Banyak slide disimpan sebagai satu file ZIP.</span>';
+}
+function placePopAt(r){
+  pop.hidden=false;
+  if(matchMedia('(max-width:880px)').matches){ pop.classList.add('sheet'); pop.style.left=''; pop.style.top=''; }
+  else { pop.classList.remove('sheet'); const w=pop.offsetWidth; pop.style.left=Math.max(8,Math.min(r.right-w,innerWidth-w-8))+'px'; pop.style.top=(r.bottom+8)+'px'; }
+}
+$('#saveBtn').addEventListener('click',()=>{
+  if(pop.dataset.save){ closePop(); return; }
+  renderSavePop(); placePopAt($('#saveBtn').getBoundingClientRect());
+});
 
 /* ===== sinkron + mulai ===== */
 function syncAll(){ syncFoto(); syncTone(); syncText(); }
@@ -840,8 +965,9 @@ async function boot(){
   loadSettings();
   ['sans','script','serif','hand','round'].forEach(f=>loadQ(FONT_OPTS[f][S.fonts[f]].q));
   loadQ('Gaegu:wght@400;700'); loadQ('Playfair+Display:ital,wght@1,600');
+  if(S.acc.swipeFi!=null && FONT_OPTS.script[S.acc.swipeFi]) loadQ(FONT_OPTS.script[S.acc.swipeFi].q);
   const s=newSlide([{id:'sample',c:sampleCanvas(),sample:true}]); s.layers=coverLayers(); S.slides.push(s);
-  paintSw(); paintFonts(); $('#exSize').value=S.exp.size; $('#exFmt').value=S.exp.fmt;
+  paintFonts(); openPanel(null);
   syncAll(); buildStrip(); drawStage(); warm();
   try{
     for(const f of Object.keys(FONT_OPTS)){ const rec=await idb.get(f); if(rec&&rec.buf){ try{ await registerFont(f,rec.buf,rec.name); }catch(e){} } }
@@ -851,6 +977,4 @@ async function boot(){
 boot();
 })();
 </script>
-
-</body>
-</html>
+</body></html>
